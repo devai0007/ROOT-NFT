@@ -19,6 +19,8 @@
             --circle-size: 160px;
             --inner-border-inset: 10px;
             --inner-border-thickness: 2px;
+            /* ปรับสัดส่วนรูปภายในวงกลม (1 = ปกติ) */
+            --img-scale: 1;
         }
 
         @keyframes rw-ring {
@@ -185,8 +187,8 @@
 
         /* แสดงเฉพาะรูปภาพในวงกลม ไม่บิดเบี้ยว */
         .rw-circle img {
-            width: 88%;
-            height: 88%;
+            width: calc(88% * var(--img-scale));
+            height: calc(88% * var(--img-scale));
             object-fit: contain;
             border-radius: 18px;
             display: block;
