@@ -31,16 +31,12 @@
 
         body {
             font-family: 'Inter', system-ui, sans-serif;
-            background: #000;
-            min-height: 100vh;
+            background: transparent;
+            /* no black page background */
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-            justify-content: center;
             -webkit-font-smoothing: antialiased;
-            padding: 20px;
+            padding: 0;
+            /* no page padding */
         }
 
         /* ====== FIX ขนาด: ใช้ aspect-ratio 3:5 ====== */
@@ -48,6 +44,8 @@
             width: var(--w);
             height: calc(var(--w) * 5 / 3);
             position: relative;
+            display: inline-block;
+            /* size equals the card only */
         }
 
         /* Fallback ถ้าเบราว์เซอร์ไม่รองรับ aspect-ratio */
