@@ -12,8 +12,8 @@
 
     <style>
         :root {
-            /* ขนาดการ์ดแบบ responsive (ล็อคช่วง 260–380px) */
-            --w: clamp(260px, 80vw, 380px);
+            /* ล็อกขนาดการ์ดและองค์ประกอบให้คงที่ */
+            --w: 380px;
             --accent: #00a2ff;
             --accent-soft: rgba(0, 162, 255, 0.45);
             --border-r: 34px;
@@ -45,16 +45,13 @@
         /* ====== FIX ขนาด: ใช้ aspect-ratio 3:5 ====== */
         .rw-nft-container {
             width: var(--w);
-            aspect-ratio: 3 / 5;
-            /* สัดส่วนแน่นอน */
+            height: calc(var(--w) * 5 / 3);
             position: relative;
         }
 
         /* Fallback ถ้าเบราว์เซอร์ไม่รองรับ aspect-ratio */
         @supports not (aspect-ratio: 1 / 1) {
-            .rw-nft-container {
-                height: calc((var(--w) * 5) / 3);
-            }
+            /* ไม่ต้อง fallback เพราะล็อกขนาดแล้ว */
         }
 
         .rw-nft-card {
@@ -205,6 +202,23 @@
             color: #d1eaff;
             text-shadow: 0 0 6px var(--accent-soft), 0 0 14px rgba(0, 162, 255, .35);
             margin-bottom: 4px;
+            text-align: center;
+            max-width: 90%;
+            line-height: 1.1;
+        }
+
+        .rw-subtitle {
+            font-size: .7rem;
+            letter-spacing: .5px;
+            color: #a2d7ff;
+            text-align: center;
+            max-width: 90%;
+            line-height: 1.1;
+        }
+
+        /* Responsive: ปรับขนาดข้อความในวงกลมเมื่อขนาดภาพเล็ก */
+        @media (max-width: 400px) {
+            /* ไม่ต้องปรับ responsive ขนาดข้อความ */
         }
 
         .rw-subtitle {
@@ -264,9 +278,7 @@
 
         /* ปรับขนาดวงกลมให้สัมพันธ์การ์ด */
         @media (max-width: 768px) {
-            :root {
-                --circle-size: 160px;
-            }
+            /* ไม่ต้องปรับ responsive ขนาดวงกลม */
         }
 
         /* ปุ่ม Export */
