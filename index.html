@@ -2,15 +2,18 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>การ์ด NFT แบบ Protocol (มินิมอล)</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NFT Card (Fixed Size, 3:5, Exportable)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas สำหรับ Export เป็น PNG -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
     <style>
-        /* CSS ใหม่สำหรับสไตล์มินิมอลที่ดูเรียบง่ายและคมชัดขึ้น */
         :root {
-            --w: 380px;
+            /* ขนาดการ์ดแบบ responsive (ล็อคช่วง 260–380px) */
+            --w: clamp(260px, 80vw, 380px);
             --accent: #00a2ff;
             --accent-soft: rgba(0, 162, 255, 0.45);
             --border-r: 34px;
@@ -27,20 +30,31 @@
 
         body {
             font-family: 'Inter', system-ui, sans-serif;
-            background: #000000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: #000;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
             -webkit-font-smoothing: antialiased;
+            padding: 20px;
         }
 
+        /* ====== FIX ขนาด: ใช้ aspect-ratio 3:5 ====== */
         .rw-nft-container {
             width: var(--w);
-            height: calc(var(--w)*5/3);
+            aspect-ratio: 3 / 5;
+            /* สัดส่วนแน่นอน */
             position: relative;
+        }
+
+        /* Fallback ถ้าเบราว์เซอร์ไม่รองรับ aspect-ratio */
+        @supports not (aspect-ratio: 1 / 1) {
+            .rw-nft-container {
+                height: calc((var(--w) * 5) / 3);
+            }
         }
 
         .rw-nft-card {
@@ -48,21 +62,24 @@
             inset: 0;
             border-radius: var(--border-r);
             overflow: hidden;
-            /* ปรับพื้นหลังให้ดูเรียบง่ายและคมชัดขึ้นพร้อมเพิ่ม Radial Gradient */
-            background: linear-gradient(148deg, #070a1a 0%, #14162e 50%, #2d183d 100%), radial-gradient(circle at 50% 120%, rgba(0, 162, 255, 0.15) 0%, transparent 60%);
-            border: 1px solid rgba(0, 162, 255, 0.5);
-            /* เพิ่มเงาแบบซ้อนเลเยอร์: เงาแรกสำหรับความลึก, เงาที่สองสำหรับแสงเรือง */
-            box-shadow: 0 10px 40px -8px rgba(0, 0, 0, 0.9), 0 0 40px -8px rgba(0, 162, 255, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.2);
+            background:
+                linear-gradient(148deg, #070a1a 0%, #14162e 50%, #2d183d 100%),
+                radial-gradient(circle at 50% 120%, rgba(0, 162, 255, .15) 0%, transparent 60%);
+            border: 1px solid rgba(0, 162, 255, .5);
+            box-shadow:
+                0 10px 40px -8px rgba(0, 0, 0, .9),
+                0 0 40px -8px rgba(0, 162, 255, .5),
+                inset 0 0 10px rgba(0, 0, 0, .2);
             backdrop-filter: blur(8px) saturate(180%);
             -webkit-backdrop-filter: blur(8px) saturate(180%);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease-out;
-            /* เพิ่ม transition สำหรับ animation */
+            transition: transform .2s ease-out;
+            transform-style: preserve-3d;
+            /* ช่วย tilt เนียนขึ้น */
         }
 
-        /* ลบเอฟเฟกต์ Aurora และ Sheen ที่ซับซ้อนออกเพื่อความเรียบง่าย */
         .rw-nft-card::before,
         .rw-nft-card::after {
             display: none;
@@ -74,9 +91,8 @@
             position: absolute;
             inset: var(--inset);
             border-radius: calc(var(--border-r) - var(--inset));
-            border: var(--thick) solid rgba(0, 162, 255, 0.6);
-            /* แก้ไขให้ใช้เงาแค่สีเดียว */
-            box-shadow: 0 0 12px -2px rgba(0, 162, 255, 0.6), inset 0 0 18px -8px rgba(0, 162, 255, 0.5);
+            border: var(--thick) solid rgba(0, 162, 255, .6);
+            box-shadow: 0 0 12px -2px rgba(0, 162, 255, .6), inset 0 0 18px -8px rgba(0, 162, 255, .5);
             pointer-events: none;
         }
 
@@ -86,12 +102,9 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 1rem;
-            /* เพิ่มขนาดตัวอักษรให้ใหญ่ขึ้น */
             font-weight: 700;
-            /* ทำให้ตัวหนาเพื่อเน้นเป็นหัวข้อหลัก */
             letter-spacing: .5px;
             color: #d1eaff;
-            /* ปรับสีให้เด่นชัดขึ้น */
             text-shadow: 0 0 4px var(--accent-soft);
             white-space: nowrap;
             max-width: 78%;
@@ -102,7 +115,6 @@
         .rw-header {
             position: absolute;
             top: 55px;
-            /* ปรับตำแหน่งให้เลื่อนลงมาเล็กน้อย */
             left: 50%;
             transform: translateX(-50%);
             font-size: .7rem;
@@ -114,11 +126,6 @@
             max-width: 78%;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        /* ลบจุดตกแต่งที่ไม่จำเป็นออก */
-        .rw-dots {
-            display: none;
         }
 
         .rw-ring {
@@ -140,15 +147,14 @@
         }
 
         .rw-ring::before {
-            /* ปรับสีให้ใช้แค่สีเดียว */
-            background: conic-gradient(from 0deg, rgba(0, 162, 255, 0.6) 0deg, transparent 40deg, rgba(0, 162, 255, 0.55) 160deg, transparent 200deg);
-            filter: blur(0.5px);
+            background: conic-gradient(from 0deg, rgba(0, 162, 255, .6) 0deg, transparent 40deg, rgba(0, 162, 255, .55) 160deg, transparent 200deg);
+            filter: blur(.5px);
             opacity: .8;
             animation: rw-ring 18s linear infinite;
         }
 
         .rw-ring::after {
-            border: 1px solid rgba(0, 162, 255, 0.45);
+            border: 1px solid rgba(0, 162, 255, .45);
             box-shadow: 0 0 10px -2px var(--accent-soft), inset 0 0 12px -4px var(--accent-soft);
             animation: rw-ring 26s linear infinite reverse;
             mix-blend-mode: screen;
@@ -173,8 +179,8 @@
             height: var(--circle-size);
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            background: radial-gradient(circle at 40% 30%, rgba(255, 255, 255, 0.22), transparent);
-            border: 2px solid rgba(0, 162, 255, 0.8);
+            background: radial-gradient(circle at 40% 30%, rgba(255, 255, 255, .22), transparent);
+            border: 2px solid rgba(0, 162, 255, .8);
             box-shadow: 0 0 24px -8px var(--accent-soft), inset 0 0 18px -6px var(--accent-soft);
             display: flex;
             flex-direction: column;
@@ -186,7 +192,7 @@
             content: "";
             position: absolute;
             inset: 12px;
-            border: 1px dashed rgba(0, 162, 255, 0.8);
+            border: 1px dashed rgba(0, 162, 255, .8);
             border-radius: 50%;
             animation: rw-ring 11s linear infinite;
             opacity: .9;
@@ -197,7 +203,7 @@
             font-weight: 700;
             letter-spacing: .55px;
             color: #d1eaff;
-            text-shadow: 0 0 6px var(--accent-soft), 0 0 14px rgba(0, 162, 255, 0.35);
+            text-shadow: 0 0 6px var(--accent-soft), 0 0 14px rgba(0, 162, 255, .35);
             margin-bottom: 4px;
         }
 
@@ -207,7 +213,6 @@
             color: #a2d7ff;
         }
 
-        /* สไตล์สำหรับข้อมูลการ์ดใหม่ */
         .rw-card-info {
             position: absolute;
             bottom: 40px;
@@ -220,7 +225,7 @@
             font-size: 1rem;
             font-weight: 700;
             letter-spacing: .5px;
-            color: #ffffff;
+            color: #fff;
             text-shadow: 0 0 6px var(--accent-soft);
         }
 
@@ -230,7 +235,7 @@
             letter-spacing: .4px;
             color: #b1d4ff;
             margin-top: 4px;
-            opacity: 0.8;
+            opacity: .8;
         }
 
         .rw-card-token {
@@ -242,7 +247,6 @@
             text-shadow: 0 0 6px var(--accent-soft);
         }
 
-        /* สไตล์สำหรับ address ใหม่ */
         .rw-address {
             position: absolute;
             bottom: 15px;
@@ -252,79 +256,121 @@
             font-weight: 500;
             letter-spacing: .5px;
             color: #a2d7ff;
-            opacity: 0.7;
+            opacity: .7;
             text-align: center;
             max-width: 90%;
             word-wrap: break-word;
-            /* เพื่อให้ข้อความยาวๆ ขึ้นบรรทัดใหม่ได้ */
         }
 
-        /* ลบส่วนเมตาข้อมูลที่ไม่จำเป็นออก */
-        .rw-meta {
-            display: none;
-        }
-
-        /* สำหรับการแสดงผลบนอุปกรณ์ขนาดเล็ก */
+        /* ปรับขนาดวงกลมให้สัมพันธ์การ์ด */
         @media (max-width: 768px) {
             :root {
-                --w: 300px;
                 --circle-size: 160px;
             }
+        }
+
+        /* ปุ่ม Export */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #0b1220;
+            color: #cfe7ff;
+            border: 1px solid rgba(0, 162, 255, .5);
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px -8px rgba(0, 162, 255, .45);
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .note {
+            color: #9dc9ff;
+            font-size: .85rem;
+            opacity: .9;
         }
     </style>
 </head>
 
 <body>
-    <div class="rw-nft-container">
-        <div class="rw-nft-card">
-            <!-- กรอบด้านใน -->
-            <div class="rw-inner-border"></div>
 
-            <!-- Header ที่ปรับให้เรียบง่ายขึ้น -->
+
+    <div class="rw-nft-container" id="cardRoot">
+        <div class="rw-nft-card" id="card">
+            <div class="rw-inner-border"></div>
             <div class="rw-subheader">ROOT WORLD PROTOCOL</div>
             <div class="rw-header">SECURE ACCESS PROTOCOL</div>
 
-            <!-- วงแหวนและวงกลมกลาง -->
             <div class="rw-ring">
                 <div class="rw-ring-track"></div>
             </div>
+
             <div class="rw-circle">
                 <div class="rw-title">SYNTHESIS</div>
                 <div class="rw-subtitle">PROTOCOL</div>
             </div>
 
-            <!-- ข้อมูลการ์ดใหม่ -->
             <div class="rw-card-info">
                 <div class="rw-card-name">NODE SPARK</div>
                 <div class="rw-card-desc">The first spark of the network</div>
                 <div class="rw-card-token">ROOT-NFT</div>
             </div>
 
-            <!-- Address -->
             <div class="rw-address">0x5cdF5b3C30bb8C63F460De080fcfE5514Cc078a9</div>
         </div>
     </div>
-    <script>
-        const card = document.querySelector('.rw-nft-card');
 
-        // Tilt effect based on mouse position
+    <script>
+        // Tilt effect
+        const card = document.getElementById('card');
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const tiltX = (y - centerY) / -20;
-            const tiltY = (x - centerX) / 20;
-
+            const cx = rect.width / 2, cy = rect.height / 2;
+            const tiltX = (y - cy) / -20;
+            const tiltY = (x - cx) / 20;
             card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
         });
-
-        // Reset tilt on mouse leave
         card.addEventListener('mouseleave', () => {
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+        });
+
+        // Export PNG (ล็อคสัดส่วน 3:5 ที่ scale สูงเพื่อความคม)
+        document.getElementById('dl').addEventListener('click', async () => {
+            const node = document.getElementById('cardRoot');
+            // ขนาดเป้าหมาย 3:5 (เช่น 1024x1706) เลือกได้ตามต้องการ
+            const targetW = 1024;
+            const targetH = Math.round(targetW * 5 / 3); // 3:5
+            const scale = targetW / node.getBoundingClientRect().width;
+
+            const canvas = await html2canvas(node, {
+                backgroundColor: null,
+                scale: scale,            // ขยายให้ถึงความกว้างเป้าหมาย
+                useCORS: true
+            });
+
+            // ครอปให้ได้อัตราส่วน 3:5 แบบเนียน ๆ
+            const out = document.createElement('canvas');
+            out.width = targetW; out.height = targetH;
+            const ctx = out.getContext('2d');
+            // วาดกลางเฟรม (กันส่วนเกิน)
+            const sx = 0, sy = (canvas.height - targetH) / 2;
+            ctx.drawImage(canvas, sx, Math.max(0, sy), canvas.width, targetH, 0, 0, targetW, targetH);
+
+            const data = out.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = data;
+            a.download = 'root-world-nft-card.png';
+            a.click();
         });
     </script>
 </body>
