@@ -7,17 +7,16 @@
     <title>NFT Card (Fixed Size, 3:5, Exportable)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- html2canvas สำหรับ Export เป็น PNG -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 
     <style>
         :root {
-            /* ล็อกขนาดการ์ดและองค์ประกอบให้คงที่ */
-            --w: 380px;
+            /* ล็อกขนาดการ์ดและองค์ประกอบให้คงที่ (ย่อขนาดลง) */
+            --w: 280px;
             --accent: #00a2ff;
             --accent-soft: rgba(0, 162, 255, 0.45);
             --border-r: 34px;
-            --circle-size: 180px;
+            --circle-size: 160px;
             --inner-border-inset: 10px;
             --inner-border-thickness: 2px;
         }
@@ -98,9 +97,9 @@
             top: 25px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            letter-spacing: .5px;
+            letter-spacing: .45px;
             color: #d1eaff;
             text-shadow: 0 0 4px var(--accent-soft);
             white-space: nowrap;
@@ -114,9 +113,9 @@
             top: 55px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: .7rem;
+            font-size: .6rem;
             font-weight: 600;
-            letter-spacing: .6px;
+            letter-spacing: .5px;
             color: #d1eaff;
             text-shadow: 0 0 6px var(--accent-soft);
             white-space: nowrap;
@@ -176,24 +175,40 @@
             height: var(--circle-size);
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            background: radial-gradient(circle at 40% 30%, rgba(255, 255, 255, .22), transparent);
-            border: 2px solid rgba(0, 162, 255, .8);
-            box-shadow: 0 0 24px -8px var(--accent-soft), inset 0 0 18px -6px var(--accent-soft);
+            overflow: hidden;
+            /* show only the image */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
 
-        .rw-circle::before {
-            content: "";
-            position: absolute;
-            inset: 12px;
-            border: 1px dashed rgba(0, 162, 255, .8);
-            border-radius: 50%;
-            animation: rw-ring 11s linear infinite;
-            opacity: .9;
+        /* แสดงเฉพาะรูปภาพในวงกลม ไม่บิดเบี้ยว */
+        .rw-circle img {
+            width: 88%;
+            height: 88%;
+            object-fit: contain;
+            border-radius: 18px;
+            display: block;
+            pointer-events: none;
+            position: relative;
+            z-index: 1;
         }
+
+        /* ตัวหนังสือกลางวงกลม (ทับบนรูป) */
+        .rw-center-label {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        /* removed dashed inner ring */
 
         .rw-title {
             font-size: 1.1rem;
@@ -221,11 +236,7 @@
             /* ไม่ต้องปรับ responsive ขนาดข้อความ */
         }
 
-        .rw-subtitle {
-            font-size: .7rem;
-            letter-spacing: .5px;
-            color: #a2d7ff;
-        }
+
 
         .rw-card-info {
             position: absolute;
@@ -236,7 +247,7 @@
         }
 
         .rw-card-name {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 700;
             letter-spacing: .5px;
             color: #fff;
@@ -244,7 +255,7 @@
         }
 
         .rw-card-desc {
-            font-size: .6rem;
+            font-size: .55rem;
             font-weight: 500;
             letter-spacing: .4px;
             color: #b1d4ff;
@@ -253,7 +264,7 @@
         }
 
         .rw-card-token {
-            font-size: .7rem;
+            font-size: .6rem;
             font-weight: 600;
             letter-spacing: .6px;
             color: #a2d7ff;
@@ -266,7 +277,7 @@
             bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: .6rem;
+            font-size: .55rem;
             font-weight: 500;
             letter-spacing: .5px;
             color: #a2d7ff;
@@ -320,28 +331,27 @@
             <div class="rw-inner-border"></div>
             <div class="rw-subheader">ROOT WORLD PROTOCOL</div>
             <div class="rw-header">SECURE ACCESS PROTOCOL</div>
-
             <div class="rw-ring">
                 <div class="rw-ring-track"></div>
             </div>
-
             <div class="rw-circle">
-                <div class="rw-title">SYNTHESIS</div>
-                <div class="rw-subtitle">PROTOCOL</div>
-            </div>
+                <div class="rw-center-label">
+                    <div class="rw-title">SYNTHESIS</div>
+                    <div class="rw-subtitle">PROTOCOL</div>
+                </div>
 
+            </div>
             <div class="rw-card-info">
                 <div class="rw-card-name">NODE SPARK</div>
                 <div class="rw-card-desc">The first spark of the network</div>
                 <div class="rw-card-token">ROOT-NFT</div>
             </div>
-
             <div class="rw-address">0x5cdF5b3C30bb8C63F460De080fcfE5514Cc078a9</div>
         </div>
     </div>
 
     <script>
-        // Tilt effect
+        // Tilt effect (คงไว้)
         const card = document.getElementById('card');
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
@@ -354,35 +364,6 @@
         });
         card.addEventListener('mouseleave', () => {
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-        });
-
-        // Export PNG (ล็อคสัดส่วน 3:5 ที่ scale สูงเพื่อความคม)
-        document.getElementById('dl').addEventListener('click', async () => {
-            const node = document.getElementById('cardRoot');
-            // ขนาดเป้าหมาย 3:5 (เช่น 1024x1706) เลือกได้ตามต้องการ
-            const targetW = 1024;
-            const targetH = Math.round(targetW * 5 / 3); // 3:5
-            const scale = targetW / node.getBoundingClientRect().width;
-
-            const canvas = await html2canvas(node, {
-                backgroundColor: null,
-                scale: scale,            // ขยายให้ถึงความกว้างเป้าหมาย
-                useCORS: true
-            });
-
-            // ครอปให้ได้อัตราส่วน 3:5 แบบเนียน ๆ
-            const out = document.createElement('canvas');
-            out.width = targetW; out.height = targetH;
-            const ctx = out.getContext('2d');
-            // วาดกลางเฟรม (กันส่วนเกิน)
-            const sx = 0, sy = (canvas.height - targetH) / 2;
-            ctx.drawImage(canvas, sx, Math.max(0, sy), canvas.width, targetH, 0, 0, targetW, targetH);
-
-            const data = out.toDataURL('image/png');
-            const a = document.createElement('a');
-            a.href = data;
-            a.download = 'root-world-nft-card.png';
-            a.click();
         });
     </script>
 </body>
